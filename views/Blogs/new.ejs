@@ -1,22 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New </title>
-</head>
-<body>
-    <h1>New Post</h1>
-    <form action="/main" method="post">
-    <label for="title">Title</label>
-    <input type="text" id="title" name="posts[title]">
+<% layout('layout/boilerplate')%>
+<style>
+body{
+    background-color: hsl(171, 100%, 41%);
+   }
+   #colort{
+     color: hsl(171, 100%, 41%);
+ }
+   #template{
+       max-width: 700px;
+       display:grid;
+       border-radius: 30px;  
+   }
+   #image{
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    max-height: 200px;
+   }
+</style>
+<div class="container-fluid row justify-content-center">
+    <div class=" d-flex " id="template">
+        <a class="btn btn-light rounded-pill mt-0 mb-3 pb-1 shadow-lg" id="colort"><i class="fas fa-arrow-left mr-3"></i><b><strong>Main Menu</strong></b> </i></a>
+    </div>
+    <div class=" card mt-0 p-0 mb-1 shadow-lg" id="template">
+        <img class="card-img-top mx-0" id="image" src="https://images.unsplash.com/photo-1627843240167-b1f9d28f732e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTN8fHZlY3RvcnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="" >
+        
+          <div class="card-body">
+            <form action="/main" method="post">
+                <div class="mb-3">
+                    <label class="form-label" for="title"><strong>Title</strong></label>
+                    <input class="form-control" type="text" id="title" name="posts[title]" required>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="image"><strong>Image</strong></label>
+                    <input class="form-control" type="text"  name="posts[image]" >
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="content"><strong>Content</strong></label>
+                    <textarea class="form-control" name="posts[content]" id="content" cols="30" rows="3" required></textarea>
+                    <div class="valid-feedback">
+                        Looks good!
+                    </div>
+                </div>
+               
+          </div> 
+          
+    </div>
+    <div class=" d-flex justify-content-end" id="template">
+            <button class="btn btn-light rounded-pill mb-2 my-2 shadow-lg" id="colort"><b><strong>Add</strong></b> <i class="fas fa-plus ml-3"></i></button>
+        </form>
+    </div>
    
-    <label for="image">Image</label>
-    <input type="text" id="image" name="posts[image]">
-    <label for="content">Content</label>
-    <textarea name="posts[content]" id="content" cols="30" rows="6"></textarea>
-    <button>Submit</button>
-    </form>
-</body>
-</html>
+</div>
