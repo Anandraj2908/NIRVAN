@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit</title>
+</head>
+<body>
+    <h1>Edit</h1>
+    <form action="/main/<%= posts._id %>?_method=PUT" method="post">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="posts[title]" value="<%= posts.title %> ">
+        
+        <label for="image">Image</label>
+        <input type="text" id="image" name="posts[image]" value="<%= posts.image %> ">
+        <label for="content">Content</label>
+        <textarea name="posts[content]" id="content" cols="30" rows="6"><%= posts.content %> </textarea>
+        <button>Submit</button>
+    </form>
+    
+</body>
+</html>

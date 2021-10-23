@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New </title>
+</head>
+<body>
+    <h1>New Post</h1>
+    <form action="/main" method="post">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="posts[title]">
+   
+    <label for="image">Image</label>
+    <input type="text" id="image" name="posts[image]">
+    <label for="content">Content</label>
+    <textarea name="posts[content]" id="content" cols="30" rows="6"></textarea>
+    <button>Submit</button>
+    </form>
+</body>
+</html>
