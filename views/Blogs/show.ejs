@@ -57,7 +57,17 @@
     justify-content: center;
 }
 </style>
+<!-- <script>
+    let getid;
+    for(let post of posts){ 
+        if(posts._id === post._id){ 
+            getid=post._id;
+        }
+    } 
+</script> -->
 <div class="row">
+    <% %>
+
     <div class="col">
         <a class=" btn btn-light mb-2 p-3 rounded-pill shadow-lg" id="colort" href="#"><i class="fas fa-arrow-left mr-2"> </i><strong><b>PREVIOUS</b></strong> </a>
     </div>
@@ -114,7 +124,7 @@
            <div class="card-footer" id="cardfooter">
            
              <a href="/main/<%= posts._id %>/edit " class="btn shadow-lg text-light" id="colorme"><b>EDIT</b></a>
-               <form class="btn" action="/main/<%= posts._id %>?_method=DELETE" method="post">
+               <form class="btn mb-0" action="/main/<%= posts._id %>?_method=DELETE" method="post">
                   <button class=" btn btn-danger shadow-lg" ><b>DELETE</b></button>
                </form>
            </div>     
@@ -153,6 +163,10 @@
        
     </div>
 </div>
+
+
+
+
 
 
  
