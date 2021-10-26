@@ -1,11 +1,14 @@
 const express = require('express');
-const app=express();
+const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
-const ejsMate =require('ejs-mate');
-const Post = require('./models/post');
+const ejsMate = require('ejs-mate');
+const ExpressError = require('./utilities/ExpressErrors');
 const methodOverride = require('method-override');
-
+const posts=require('./routes/posts');
+const comments=require('./routes/comments');
+const session = require('express-session');
+const flash=require('connect-flash');
 
 mongoose.connect('mongodb://localhost:27017/nirvan',{
     useNewUrlParser:true,
@@ -25,54 +28,56 @@ app.set('views',path.join(__dirname,'views'));
 
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
+app.use(express.static(path.join(__dirname, 'public')))
 
+const sessionConfig = {
+    secret: 'thisshouldbeabettersecret!',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}
+
+app.use(session(sessionConfig));
+
+app.use(flash());
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
+
+
+//routes for /main/
+app.use('/main',posts);
+
+//routes for comments
+app.use('/main/:id/comments',comments);
 
 //home page
 app.get('/',(req,res) => {
     res.render('home')
 });
 
-//Main menu
-app.get('/main', async (req,res) => {
-    const posts =await Post.find({});
-    res.render('Blogs/index', {posts}) ;
-});
 
-//Create
-app.get('/main/new',(req,res) => {
-    res.render('Blogs/new');
-}) 
-app.post('/main', async (req,res) =>{
-    const posts = await Post(req.body.posts);
-    await posts.save();
-    res.redirect(`/main/${posts._id}`)
-})
 
-//Show page
-app.get('/main/:id', async (req,res) => {
-    const posts = await Post.findById(req.params.id);
-    res.render('Blogs/show',{posts});
-});
 
-//Edit
-app.get('/main/:id/edit',async (req,res) => {
-    const posts = await Post.findById(req.params.id);
-    res.render('Blogs/edit',{posts});
-})
-app.put('/main/:id', async (req,res) => {
-    const {id} = req.params;
-    const posts = await Post.findByIdAndUpdate(id,{...req.body.posts});
-    res.redirect(`/main/${posts._id}`);
+
+//if the request dosen't match the above routes
+app.all('*',(req,res,next) =>{
+   next(new ExpressError('Page Not Found', 404))
 })
 
 
-//Delete
-app.delete('/main/:id', async (req,res) => {
-    const {id} = req.params;
-    await Post.findByIdAndDelete(id);
-    res.redirect('/main');
+app.use((err,req,res,next) => {
+    const {statusCode =500}=err;
+    if(!err.message) err.message='Internal Server Error'
+    res.status(statusCode).render('errors',{err});
+    
 })
-
 
 
 //connected to localhost

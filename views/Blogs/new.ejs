@@ -25,7 +25,7 @@ body{
         <img class="card-img-top mx-0" id="image" src="https://images.unsplash.com/photo-1627843240167-b1f9d28f732e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTN8fHZlY3RvcnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="" >
         
           <div class="card-body">
-            <form action="/main" method="post">
+            <form action="/main" method="post" novalidate class="validated-form">
                 <div class="mb-3">
                     <label class="form-label" for="title"><strong>Title</strong></label>
                     <input class="form-control" type="text" id="title" name="posts[title]" required>
@@ -37,9 +37,10 @@ body{
                     <label class="form-label" for="image"><strong>Image</strong></label>
                     <input class="form-control" type="text"  name="posts[image]" >
                     <div class="valid-feedback">
-                        Looks good!
+                        Not required!
                     </div>
                 </div>
+               
                 <div class="mb-3">
                     <label class="form-label" for="content"><strong>Content</strong></label>
                     <textarea class="form-control" name="posts[content]" id="content" cols="30" rows="3" required></textarea>

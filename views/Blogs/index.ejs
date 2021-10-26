@@ -34,7 +34,9 @@ author:String,
 content:String,
 image:String,
 //comments:[{comment:String,author:String,date:Date}],-->
+<%- include('../partials/flash')%>
 <div class="row">
+    
     <% for(let post of posts){ %> 
         <div class="col ">
             <div class="card p-0 m-4 shadow-lg" id="card">

@@ -1,4 +1,12 @@
+
 <% layout('layout/boilerplate')%>
+<script>
+    if(nextid.equals(post._id))
+     {
+        buttonnext= document.querySelector('#colornext');
+        buttonnext.disabled=true;
+     }
+</script>
 <style>
     body{
     background-color: hsl(171, 100%, 41%);
@@ -6,7 +14,7 @@
  #colorme{
      background-color: hsl(171, 100%, 41%);
  }
- #colort{
+ #colort, #colorprevious, #colornext{
      color: hsl(171, 100%, 41%);
  }
 #grid{
@@ -46,6 +54,9 @@
 #cardfooter2{
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
+
+}
+#commentcard{
     
 }
 
@@ -60,20 +71,28 @@
 <!-- <script>
     let getid;
     for(let post of posts){ 
-        if(posts._id === post._id){ 
+        if(post._id === post._id){ 
             getid=post._id;
         }
     } 
 </script> -->
+
+<!-- <span> `currentid=${post._id} | nextid=${nextid}` </span> -->
 <div class="row">
-    <% %>
+    
 
     <div class="col">
-        <a class=" btn btn-light mb-2 p-3 rounded-pill shadow-lg" id="colort" href="#"><i class="fas fa-arrow-left mr-2"> </i><strong><b>PREVIOUS</b></strong> </a>
+        <a class=" btn btn-light mb-2 p-3 rounded-pill shadow-lg" id="colorprevious" href="#"><i class="fas fa-arrow-left mr-2"> </i><strong><b>PREVIOUS</b></strong> </a>
+    </div>
+    <div class="col">
+        <div class="d-flex justify-content-center">
+            <%- include('../partials/flash')%>
+        </div>
+         
     </div>
     <div class="col ">
         <div class="d-flex justify-content-end">
-            <a class=" btn btn-light mb-2 p-3 rounded-pill shadow-lg " id="colort" href="#"><strong><b>NEXT</b></strong> <i class="fas fa-arrow-right ml-2"> </i></a>
+            <a class=" btn btn-light mb-2 p-3 rounded-pill shadow-lg " id="colornext" href="/main/<%= nextid %> "><strong><b>NEXT</b></strong> <i class="fas fa-arrow-right ml-2"> </i></a>
         </div>
         
     </div>
@@ -110,21 +129,21 @@
         </div>
         
         <!--  <div class="card-body">
-              posts.image
+              post.image
          </div> -->
          <div class="card-body">
-           <h5 class="card-title " id="textcenter"><%= posts.title %></h5>
+           <h5 class="card-title " id="textcenter"><%= post.title %></h5>
            
          </div>
          <ul class="list-group list-group-flush ">
-            <p class="card-text p-3 m-1" id="textcenter"><%= posts.content %></p>
+            <p class="card-text p-3 m-1" id="textcenter"><%= post.content %></p>
             <hr>
-           <li class="list-group-item"><%= posts.date %></li>
+           <li class="list-group-item"><%= post.date %></li>
          </ul>
            <div class="card-footer" id="cardfooter">
            
-             <a href="/main/<%= posts._id %>/edit " class="btn shadow-lg text-light" id="colorme"><b>EDIT</b></a>
-               <form class="btn mb-0" action="/main/<%= posts._id %>?_method=DELETE" method="post">
+             <a href="/main/<%= post._id %>/edit " class="btn shadow-lg text-light" id="colorme"><b>EDIT</b></a>
+               <form class="btn mb-0" action="/main/<%= post._id %>?_method=DELETE" method="post">
                   <button class=" btn btn-danger shadow-lg" ><b>DELETE</b></button>
                </form>
            </div>     
@@ -133,8 +152,32 @@
         <div class="card" id="rightcard">
                 <div class="" id="comment">
                     <div class="card-header " id="cardheader"> <strong>Comments</strong></div>
-                    <div id="commentcontent ">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Id pariatur accusantium ex? Ducimus asperiores earum quaerat expedita animi eos quos voluptates. Pariatur, vitae id! Iste deserunt natus dolore sint quis?</div>
-                    <div class="card-footer " id="cardfooter2">Add Comment</div>
+                    <div id="commentcontent container">
+                       <% for(let comment of post.comments){ %> 
+                        <div class="p-2 m-2 container-fluid row">
+                            <div class="card rounded-pill col" id="commentcard" >
+                                
+                                  <span class="m-2"><%= comment.body %></span>  
+                                
+                                
+                            </div>
+                            <form class="col-auto" action="/main/<%= post._id %>/comments/<%= comment._id %>?_method=DELETE" method="post">
+                                <button class=" p-2 btn btn-danger rounded-circle m-2 shadow-lg"><i class="fas fa-minus m-1"></i></button>
+                            </form> 
+                        </div>
+                        
+                        <% } %> 
+                    </div>
+                    <div class="card-footer " id="cardfooter2">
+                         <form class="validated-form row" action="/main/<%= post._id %>/comments" method="post" novalidate>
+                             <div class="col">
+                                 <div class=""><textarea class="form-control p-2 m-2 rounded-pill shadow-lg" name="comment[body]" id="body" cols="30" rows="1" required></textarea> </div>
+                             </div>
+                             <div class="col-auto">
+                                <button class=" p-2 btn btn-success rounded-circle m-2 shadow-lg"><i class="fas fa-plus m-1"></i></button>
+                             </div>
+                         </form>
+                   </div>
                </div>
         </div>
         
