@@ -4,6 +4,7 @@ const wrapAsync = require('../utilities/wrapAsync');
 const ExpressError = require('../utilities/ExpressErrors');
 const Post = require('../models/post');
 const router = express.Router();
+const {isLoggedIn}=require('../middleware');
 
 //validating blog through Joi
 const validateBlog = (req,res,next) => {
@@ -25,10 +26,10 @@ router.get('/',wrapAsync( async (req,res) => {
 }));
 
 //Create
-router.get('/new',(req,res) => {
+router.get('/new',isLoggedIn,(req,res) => {
     res.render('Blogs/new');
 }) 
-router.post('/',validateBlog ,wrapAsync( async (req,res) =>{
+router.post('/',isLoggedIn,validateBlog ,wrapAsync( async (req,res) =>{
     if(!req.body.posts) throw new ExpressError('Bad Request',400);
     const posts = await Post(req.body.posts);
     await posts.save();
@@ -77,12 +78,12 @@ router.get('/:id',wrapAsync( async (req,res) => {
 }));
 
 //Edit
-router.get('/:id/edit',wrapAsync( async (req,res) => {
+router.get('/:id/edit',isLoggedIn,wrapAsync( async (req,res) => {
     const { id } = req.params;
     const posts = await Post.findById(id);
     res.render('Blogs/edit',{posts});
 }))
-router.put('/:id',validateBlog ,wrapAsync( async (req,res) => {
+router.put('/:id',isLoggedIn,validateBlog ,wrapAsync( async (req,res) => {
     const {id} = req.params;
     const posts = await Post.findByIdAndUpdate(id,{...req.body.posts});
     req.flash('success', 'Updated Post!')
@@ -91,7 +92,7 @@ router.put('/:id',validateBlog ,wrapAsync( async (req,res) => {
 
 
 //Delete
-router.delete('/:id',wrapAsync( async (req,res) => {
+router.delete('/:id',isLoggedIn,wrapAsync( async (req,res) => {
     const {id} = req.params;
     await Post.findByIdAndDelete(id);
     req.flash('success', 'Deleted Post')

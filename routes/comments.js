@@ -5,7 +5,7 @@ const wrapAsync = require('../utilities/wrapAsync');
 const ExpressError = require('../utilities/ExpressErrors');
 const Post = require('../models/post');
 const Comment=require('../models/comment');
-
+const {isLoggedIn}=require('../middleware');
 
 //validating comment through Joi
 const validateComment = (req, res, next) => {
@@ -19,7 +19,7 @@ const validateComment = (req, res, next) => {
 }
 
 //Create Comment
-router.post('/',validateComment,wrapAsync(async(req,res) =>{
+router.post('/',isLoggedIn,validateComment,wrapAsync(async(req,res) =>{
     const post = await Post.findById(req.params.id);
     const comment = new Comment(req.body.comment);
     post.comments.push(comment);//can get an error of null so add mergerParams:true inside Router
@@ -32,7 +32,7 @@ router.post('/',validateComment,wrapAsync(async(req,res) =>{
 
 
 //Delete Comment
-router.delete('/:commentId',wrapAsync(async(req,res) =>{
+router.delete('/:commentId',isLoggedIn,wrapAsync(async(req,res) =>{
     const {id,commentId}=req.params;
     await Post.findByIdAndUpdate(id,{$pull:{comments:commentId}});
     await Comment.findByIdAndDelete(commentId);

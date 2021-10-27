@@ -1,3 +1,6 @@
+if(process.env.NODE_ENV !== "production"){
+    require('dotenv').config();
+}
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -5,10 +8,17 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const ExpressError = require('./utilities/ExpressErrors');
 const methodOverride = require('method-override');
-const posts=require('./routes/posts');
-const comments=require('./routes/comments');
+const postsRoutes=require('./routes/posts');
+const commentsRoutes=require('./routes/comments');
+const usersRoutes=require('./routes/users');
 const session = require('express-session');
 const flash=require('connect-flash');
+const passport=require('passport');
+const LocalStrategy =require('passport-local');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy=require('passport-facebook').Strategy;
+const User=require('./models/user');
+
 
 mongoose.connect('mongodb://localhost:27017/nirvan',{
     useNewUrlParser:true,
@@ -41,21 +51,104 @@ const sessionConfig = {
     }
 }
 
-app.use(session(sessionConfig));
 
+app.use(session(sessionConfig));
 app.use(flash());
+
+
+
+
+passport.use(
+    new FacebookStrategy({
+        clientID:process.env.fclientID,
+        clientSecret:process.env.fclientSecret,
+        callbackURL:'/auth/facebook/redirect',
+        profileFields:['id','displayName','picture.type(large)']
+    },
+    function(accessToken,refreshToken,profile,done) {
+        console.log(accessToken,refreshToken,profile);
+        User.findOne({googleId: profile.id}).then((currentUser) => {
+            if(currentUser){
+                // already have this user
+                console.log('user is: ', currentUser);
+                done(null, currentUser);
+            } else {
+                // if not, create user in our db
+                new User({
+                    facebookId: profile.id,
+                    username: profile.displayName,
+                    thumbnail: profile.photos[0].value
+                }).save().then((newUser) => {
+                    console.log('created new user: ', newUser);
+                    done(null, newUser);
+                });
+            }
+        });
+    }));
+
+passport.use(
+    new GoogleStrategy({
+        // options for google strategy
+        clientID:process.env.gclientID,
+        clientSecret:process.env.gclientSecret,
+        callbackURL: '/auth/google/redirect'
+    }, (accessToken, refreshToken, profile, done) => {
+        // check if user already exists in our own db
+        User.findOne({googleId: profile.id}).then((currentUser) => {
+            if(currentUser){
+                // already have this user
+                console.log('user is: ', currentUser);
+                done(null, currentUser);
+            } else {
+                // if not, create user in our db
+                new User({
+                    googleId: profile.id,
+                    username: profile.displayName,
+                    thumbnail: profile._json.picture
+                }).save().then((newUser) => {
+                    console.log('created new user: ', newUser);
+                    done(null, newUser);
+                });
+            }
+        });
+    })
+);
+
+// initialize passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((id, done) => {
+    User.findById(id).then((user) => {
+        done(null, user);
+    });
+
+});
+passport.use(new LocalStrategy(User.authenticate()));
+
 app.use((req, res, next) => {
+    if(!['/login','/'].includes(req.riginalUrl)){
+        req.session.returnTo=req.originalUrl;
+    }
+    res.locals.currentUser=req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
 })
 
+//routes for users
+app.use('/',usersRoutes);
 
 //routes for /main/
-app.use('/main',posts);
+app.use('/main',postsRoutes);
 
 //routes for comments
-app.use('/main/:id/comments',comments);
+app.use('/main/:id/comments',commentsRoutes);
 
 //home page
 app.get('/',(req,res) => {
